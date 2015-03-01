@@ -9,8 +9,11 @@ var path = require('path');
 //Express settings
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public', 'views'));
-app.get('/', function (req, res) {
+app.get('/home', function (req, res) {
     res.render('home');
+});
+app.get('/design', function (req, res) {
+    res.render('quilt-designer');
 });
 app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
 app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
