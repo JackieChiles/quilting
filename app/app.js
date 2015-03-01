@@ -22,6 +22,6 @@ app.use('/lib/angular-route.js', express.static(path.join(__dirname, 'node_modul
 app.use('/lib/socket.io.js', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'node_modules', 'socket.io-client', 'socket.io.js')));
 
 //Express startup
-server.listen(3000, function () {
-    console.log('Started on port 3000...');
+server.listen(4000, function () {
+    console.log('Started on port 4000...');
 });
