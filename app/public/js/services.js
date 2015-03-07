@@ -1,6 +1,6 @@
 'use strict';
 
-/*app.factory('socket', function ($rootScope) {
+app.factory('socket', function ($rootScope) {
     var socket = io.connect();
     
     return {
@@ -25,4 +25,4 @@
             });
         }
     };
-});*/
+});

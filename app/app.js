@@ -5,10 +5,28 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var path = require('path');
+var dal = require('./server/dal');
+
+//Initialization
+require('./server/dbinit').initialize();
+
+//Socket.io setup
+io.on('connection', function (socket) {
+    socket.on('initializeQuiltDesigner', function (message, callback) {       
+        dal.getQuiltSizes(function (data) {
+            callback({
+                isNew: true,
+                quiltSizeOptions: data
+            });
+        });
+    });
+});
 
 //Express settings
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public', 'views'));
+
+//Express routes
 app.get('/', function (req, res) {
     res.redirect('home');
 });
