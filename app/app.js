@@ -8,16 +8,28 @@ var path = require('path');
 var dal = require('./server/dal');
 
 //Initialization
-require('./server/dbinit').initialize();
+dal.initialize();
 
 //Socket.io setup
 io.on('connection', function (socket) {
-    socket.on('initializeQuiltDesigner', function (message, callback) {       
-        dal.getQuiltSizes(function (data) {
-            callback({
-                isNew: true,
-                quiltSizeOptions: data
-            });
+    //message: {}
+    socket.on('getQuiltSizeOptions', function (message, callback) {       
+        dal.getQuiltSizeOptions(function (options) {
+            callback(options);
+        });
+    });
+    
+    //message: { id, name, width, height, unit }
+    socket.on('newQuilt', function (message, callback) {
+        dal.newQuilt(message, function (quilt) {
+            callback(quilt);
+        });
+    });
+    
+    //message: { quiltId }
+    socket.on('getQuilt', function (message, callback) {
+        dal.getQuilt(message.id, function (quilt) {
+            callback(quilt);
         });
     });
 });
@@ -33,7 +45,7 @@ app.get('/', function (req, res) {
 app.get('/home', function (req, res) {
     res.render('home');
 });
-app.get('/design', function (req, res) {
+app.get('/design/:id?', function (req, res) {
     res.render('quilt-designer');
 });
 app.use('/js', express.static(path.join(__dirname, 'public', 'js')));

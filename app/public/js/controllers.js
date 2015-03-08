@@ -3,9 +3,40 @@
 var app = angular.module('quiltingApp', []);
 
 app.controller('QuiltDesignerController', function ($scope, socket) {
+    //Private functions
+    var getQuiltId = function () {
+        //Expecting /design/{id} or just /design
+        return window.location.pathname.split('/')[2];
+    };
+    
+    //Data
+    $scope.isNew = !getQuiltId();
+    $scope.quiltSizeOptions = [];
+    
+    //Functions
+    $scope.newQuilt = function (size, $event) {
+        $event.stopPropagation();
+        
+        socket.emit('newQuilt', size, function (message) {
+            console.log('Created new quilt: ', message);
+        });
+    };
+    
+    $scope.getQuilt = function (id) {
+        socket.emit('getQuilt', { id: id }, function (message) {
+            console.log('Retrieved existing quilt: ', message);
+        });
+    };
+    
     //Initialization
-    socket.emit('initializeQuiltDesigner', {}, function(message) {
-        $scope.isNew = message.isNew;
-        $scope.quiltSizeOptions = message.quiltSizeOptions;
-    });
+    if ($scope.isNew) {
+        //Retrieve the list of possible quilt size options if this is a new quilt
+        socket.emit('getQuiltSizeOptions', {}, function (message) {
+            $scope.quiltSizeOptions = message;
+        });
+    }
+    else {
+        //Retrieve the quilt data if this is an existing quilt
+        $scope.getQuilt(getQuiltId());
+    }
 });
