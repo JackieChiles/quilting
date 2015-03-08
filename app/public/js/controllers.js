@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('quiltingApp', []);
+var app = angular.module('QuiltingApp', []);
 
 app.controller('QuiltDesignerController', function ($scope, socket) {
     //Private functions
