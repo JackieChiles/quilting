@@ -15,5 +15,11 @@ module.exports = {
         creationDate: { type: Date, default: Date.now },
         width: Number,
         height: Number
+    })),
+    QuiltSizeOption: mongoose.model('QuiltSizeOptions', new mongoose.Schema({
+        name: String,
+        width: Number,
+        height: Number,
+        unit: String
     }))
 };

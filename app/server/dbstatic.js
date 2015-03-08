@@ -1,8 +1,8 @@
 'use strict';
 
-//Static data that will rarely change, inserted into the database on a server restart via dbinit
+//Static data that will rarely change
 module.exports = {
-    QuiltSizes: [
+    quiltSizeOptions: [
         {
             name: 'King',
             width: 98,

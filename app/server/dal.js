@@ -2,25 +2,10 @@
 
 var util = require('util');
 var schema = require('./schema');
-
-module.exports.initialize = function() {
-    require('./dbinit').initialize();
-};
+var staticData = require('./dbstatic');
 
 module.exports.getQuiltSizeOptions = function (callback) {
-    var mongoClient = require('mongodb').MongoClient;
-    var dbName = require('./config').dbName;
-
-    mongoClient.connect(dbName, function (err, db) {
-        if (err) {
-           console.log(err);
-           return;
-        }
-
-        db.collection('QuiltSizes').find().toArray(function (err, items) {
-            callback(items);
-        });
-    });
+    callback(staticData.quiltSizeOptions);
 };
 
 module.exports.getQuilt = function (id, callback) {
