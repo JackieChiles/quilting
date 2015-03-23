@@ -7,21 +7,44 @@
     <body ng-controller="QuiltDesignerController">
         <% include nav.ejs %>
         
-        <div ng-show="isNew" class="col-sm-offset-5 col-sm-2 text-center">
-            <div class="btn-group">
-                <button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Select a size <span class="caret"></span>
-                </button>
+        <div ng-show="isNew" class="col-sm-offset-5 col-sm-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Choose a size</h2>
+                </div>
+                <div class="panel-body">
+                    <form>
+                        <div ng-repeat="size in quiltSizeOptions">
+                            <input ng-model="$parent.selectedSize" ng-value="{{ size }}" type="radio" id="quilt-size-radio-{{ size.name }}" />
+                            <label for="quilt-size-radio-{{ size.name }}">
+                                <strong>{{ size.name }}</strong>
+                                <span ng-show="!size.isCustom" class="label label-default">{{ size.width }} {{ size.unit }} &times; {{ size.height }} {{ size.unit }}</span>
+                            </label>
+                        </div>
+                        
+                        <hr />
+                        
+                        <div ng-show="selectedSize">
+                            <h4>Dimensions</h4>
+                            
+                            <div>
+                                <div>
+                                    <label for="new-quilt-width">Width ({{ selectedSize.unit }}): </label>
+                                    <input ng-disabled="!selectedSize.isCustom" ng-model="selectedSize.width" type="number" min="0" step="0.25" id="new-quilt-width" class="new-quilt-dimension" />
+                                </div>
+                                <div>
+                                    <label for="new-quilt-height">Height ({{ selectedSize.unit }}): </label>
+                                    <input ng-disabled="!selectedSize.isCustom" ng-model="selectedSize.height" type="number" min="0" step="0.25" id="new-quilt-height" class="new-quilt-dimension" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <br />
 
-                <ul class="dropdown-menu" role="menu">
-                    <li ng-repeat="size in quiltSizeOptions" ng-click="newQuilt(size, $event)">
-                        <a href="">
-                            <strong>{{ size.name }}</strong>
-                            <span class="label label-default">{{size.width}} {{size.unit}} X {{size.height}} {{size.unit}}</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+                        <input ng-disabled="!selectedSize" ng-click="newQuilt()" type="submit" class="btn btn-default btn-lg" value="Create New Quilt" />
+                    </form>
+                </div>
+            </div>         
         </div>
     </body>
 </html>

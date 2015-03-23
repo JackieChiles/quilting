@@ -18,16 +18,20 @@ io.on('connection', function (socket) {
     
     //message: { id, name, width, height, unit }
     socket.on('newQuilt', function (message, callback) {
-        dal.newQuilt(message, function (quilt) {
-            callback(quilt);
-        });
+        if (message) {
+            dal.newQuilt(message, function (quilt) {
+                callback(quilt);
+            });
+        }
     });
     
     //message: { quiltId }
     socket.on('getQuilt', function (message, callback) {
-        dal.getQuilt(message.id, function (quilt) {
-            callback(quilt);
-        });
+        if (message) {
+            dal.getQuilt(message.id, function (quilt) {
+                callback(quilt);
+            });
+        }
     });
 });
 
