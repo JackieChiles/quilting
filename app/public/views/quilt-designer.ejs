@@ -10,10 +10,15 @@
         <div ng-show="isNew" class="col-sm-offset-5 col-sm-2">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h2 class="panel-title">Choose a size</h2>
+                    <h2 class="panel-title">Create New Quilt</h2>
                 </div>
                 <div class="panel-body">
                     <form>
+                        <label for="new-quilt-name">
+                            <strong>Name: </strong>
+                        </label>
+                        <input ng-model="newQuiltName" type="text" id="new-quilt-name" />
+                        
                         <div ng-repeat="size in quiltSizeOptions">
                             <input ng-model="$parent.selectedSize" ng-value="{{ size }}" type="radio" id="quilt-size-radio-{{ size.name }}" />
                             <label for="quilt-size-radio-{{ size.name }}">
