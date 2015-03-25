@@ -21,10 +21,10 @@ module.exports.getQuilt = function (id, callback) {
     });
 };
 
-module.exports.newQuilt = function (size, callback) {
+module.exports.newQuilt = function (size, name, callback) {
     var m = new schema.Quilt();
 
-    m.name = util.format('New %s-Sized Quilt', size.name);
+    m.name = name;
     m.width = size.width;
     m.height = size.height;
 

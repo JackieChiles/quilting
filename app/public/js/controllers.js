@@ -13,10 +13,11 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     $scope.isNew = !getQuiltId();
     $scope.quiltSizeOptions = [];
     $scope.selectedSize = null;
+    $scope.newQuiltName = "";
     
     //Functions
     $scope.newQuilt = function () {
-        socket.emit('newQuilt', $scope.selectedSize, function (message) {
+        socket.emit('newQuilt', { size: $scope.selectedSize, name: $scope.newQuiltName }, function (message) {
             console.log('Created new quilt: ', message);
         });
     };

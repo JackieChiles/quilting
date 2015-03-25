@@ -16,10 +16,10 @@ io.on('connection', function (socket) {
         });
     });
     
-    //message: { id, name, width, height, unit }
+    //message: { size: { name, width, height, unit }, name }
     socket.on('newQuilt', function (message, callback) {
         if (message) {
-            dal.newQuilt(message, function (quilt) {
+            dal.newQuilt(message.size, message.name, function (quilt) {
                 callback(quilt);
             });
         }

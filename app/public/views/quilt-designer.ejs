@@ -15,9 +15,13 @@
                 <div class="panel-body">
                     <form>
                         <label for="new-quilt-name">
-                            <strong>Name: </strong>
+                            <h4>Name</h4>
                         </label>
                         <input ng-model="newQuiltName" type="text" id="new-quilt-name" />
+                        
+                        <hr />
+                        
+                        <h4>Size</h4>
                         
                         <div ng-repeat="size in quiltSizeOptions">
                             <input ng-model="$parent.selectedSize" ng-value="{{ size }}" type="radio" id="quilt-size-radio-{{ size.name }}" />
@@ -27,11 +31,7 @@
                             </label>
                         </div>
                         
-                        <hr />
-                        
                         <div ng-show="selectedSize">
-                            <h4>Dimensions</h4>
-                            
                             <div>
                                 <div>
                                     <label for="new-quilt-width">Width ({{ selectedSize.unit }}): </label>
