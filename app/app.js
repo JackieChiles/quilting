@@ -49,9 +49,6 @@ app.get('/home', function (req, res) {
 app.get('/design/:id?', function (req, res) {
     res.render('quilt-designer');
 });
-app.get('/test', function (req, res) {
-    res.render('test');
-});
 app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
 app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
 app.use('/lib/angular.js', express.static(path.join(__dirname, 'node_modules', 'angular', 'angular.js')));
