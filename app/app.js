@@ -49,6 +49,9 @@ app.get('/home', function (req, res) {
 app.get('/design/:id?', function (req, res) {
     res.render('quilt-designer');
 });
+app.get('/test', function (req, res) {
+    res.render('test');
+});
 app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
 app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
 app.use('/lib/angular.js', express.static(path.join(__dirname, 'node_modules', 'angular', 'angular.js')));
@@ -56,6 +59,7 @@ app.use('/lib/angular-route.js', express.static(path.join(__dirname, 'node_modul
 app.use('/lib/socket.io.js', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'node_modules', 'socket.io-client', 'socket.io.js')));
 app.use('/lib/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use('/lib/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
+app.use('/lib/snap.svg.js', express.static(path.join(__dirname, 'node_modules', 'snapsvg', 'dist', 'snap.svg.js')));
 
 //Express startup
 server.listen(4000, function () {
