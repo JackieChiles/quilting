@@ -7,7 +7,7 @@
     <body ng-controller="QuiltDesignerController">
         <% include nav.ejs %>
         
-        <div ng-show="isNew" class="col-sm-offset-5 col-sm-2">
+        <div ng-show="!isQuiltIdParameter && !isQuiltLoaded()" class="col-sm-offset-5 col-sm-2">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h2 class="panel-title">Create New Quilt</h2>
@@ -52,9 +52,9 @@
             </div>
         </div>
         
-        <div ng-show="!isNew">
-            <div id="grid-container" class="col-md-8">
-                <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="grid"></svg>
+        <div visibility-hidden="!isQuiltLoaded()">
+            <div class="col-md-8">
+                <svg draw-grid="isQuiltLoaded()" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="grid"></svg>
             </div>
         </div>
     </body>
