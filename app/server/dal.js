@@ -37,3 +37,7 @@ module.exports.newQuilt = function (size, name, callback) {
         module.exports.getQuilt(result._id, callback);
     });
 };
+
+module.exports.getGridSnapGranularityOptions = function (callback) {
+    callback(staticData.gridSnapGranularityOptions);
+};

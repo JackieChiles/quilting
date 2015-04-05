@@ -33,6 +33,13 @@ io.on('connection', function (socket) {
             });
         }
     });
+    
+    //message: {}
+    socket.on('getGridSnapGranularityOptions', function (message, callback) {       
+        dal.getGridSnapGranularityOptions(function (options) {
+            callback(options);
+        });
+    });
 });
 
 //Express settings

@@ -90,6 +90,8 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     $scope.selectedSize = null;
     $scope.newQuiltName = '';
     $scope.quilt = null;
+    $scope.gridSnapGranularityOptions = [];
+    $scope.gridSnapGranularity = null;
     
     //Functions
     $scope.newQuilt = function () {
@@ -121,4 +123,9 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
         //Retrieve the quilt data if this is an existing quilt
         $scope.getQuilt(getQuiltId());
     }
+    
+    socket.emit('getGridSnapGranularityOptions', {}, function (message) {
+        $scope.gridSnapGranularityOptions = message;
+        $scope.gridSnapGranularity = $scope.gridSnapGranularityOptions[0];
+    });
 });
