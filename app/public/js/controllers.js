@@ -6,12 +6,15 @@ var app = angular.module('QuiltingApp', []);
 app.directive('drawGrid', function () {
     return {
         link: function (scope, element, attrs) {
-            scope.$watch(attrs.drawGrid, function (value) {
-                if (value) {
+            var drawGrid = function () {
+                if (attrs.drawGrid && scope.quilt) {
                     var svg = element[0];
                     var snap = Snap(svg);
                     var quiltWidth = scope.quilt.width;
                     var quiltHeight = scope.quilt.height;
+                    
+                    //Grid snap granularity of 1 will result in no grid snap lines drawn
+                    var gridSnapGranularity = scope.gridSnapGranularity && scope.gridSnapGranularity.value ? scope.gridSnapGranularity.value : 1;
 
                     //In pixels, the quilt width should fill the entire SVG
                     var pixelWidth = svg.offsetWidth;
@@ -30,27 +33,79 @@ app.directive('drawGrid', function () {
                     //Thickness of the border of each box
                     var pixelBoxStrokeWidth = 1;
 
-                    //Scale the square-inch boxes proportionally
+                    //Scale the grid boxes proportionally
                     var pixelBoxSize = pixelWidth / quiltWidth;
+                    var pixelSnapGridBoxSize = pixelBoxSize * gridSnapGranularity;
+                    
+                    //Remove the old grid, if any
+                    var oldRect = snap.select('.grid-rect');                    
+                    oldRect && oldRect.remove();
 
-                    //Build the rectangle and pattern
+                    //Build the rectangle and patterns
                     var rect = snap.rect(0, 0, pixelWidth, pixelHeight);
-                    var path = snap.path(['M', pixelBoxSize, '0', 'L', '0', '0', '0', pixelBoxSize]
-                        .join(' '))
+                    
+                    rect.attr({
+                        class: 'grid-rect'
+                    });
+                    
+                    var getGridPathString = function (boxSize) {
+                        return ['M', boxSize, '0', 'L', '0', '0', '0', boxSize, boxSize, boxSize, boxSize, '0'].join(' ');
+                    };
+                    
+                    //Grid snap granularity pattern 
+                    var gridSnapPath = snap.path(getGridPathString(pixelSnapGridBoxSize))
                         .attr({
                             fill: 'none',
-                            stroke: '#333333',
+                            stroke: '#EE0000',
+                            strokeWidth: 2
+                        });
+                    
+                    //Standard inch-per-box pattern
+                    var standardPath = snap.path(getGridPathString(pixelBoxSize))
+                        .attr({
+                            fill: 'none',
+                            stroke: '#00EE00',
                             strokeWidth: pixelBoxStrokeWidth
                         });
-
-                    path = path.pattern(0, 0, pixelBoxSize, pixelBoxSize);
+                    
                     rect.attr({
                         stroke: '#000000',
-                        strokeWidth: 3,
-                        fill: path
+                        strokeWidth: 3
+                    });
+                    
+                    var gridSnapPattern = null;
+                    var standardPattern = null;
+                    
+                    if (gridSnapGranularity > 1) {
+                        standardPattern = standardPath.pattern(0, 0, pixelBoxSize, pixelBoxSize);
+                        
+                        //Grid snap is larger than the standard 1-inch grid
+                        gridSnapPath.attr({
+                            fill: standardPattern
+                        });
+                    }
+                    else if (gridSnapGranularity < 1) {
+                        gridSnapPattern = gridSnapPath.pattern(0, 0, pixelSnapGridBoxSize, pixelSnapGridBoxSize);
+                        
+                        //Grid snap is smaller than the standard 1-inch grid
+                        standardPath.attr({
+                            fill: gridSnapPattern
+                        });
+                    }
+                    
+                    //Make patterns from the path definitions if they haven't already been created
+                    gridSnapPattern || (gridSnapPattern = gridSnapPath.pattern(0, 0, pixelSnapGridBoxSize, pixelSnapGridBoxSize));
+                    standardPattern || (standardPattern = standardPath.pattern(0, 0, pixelBoxSize, pixelBoxSize));
+                    
+                    //Finally, fill the grid rectangle with the larger-scale pattern
+                    rect.attr({
+                        fill: gridSnapGranularity <= 1 ? standardPattern : gridSnapPattern
                     });
                 }
-            });
+            };
+                      
+            scope.$watch(attrs.drawGrid, drawGrid);
+            scope.$watch('gridSnapGranularity', drawGrid);
         }
     };
 });
