@@ -30,9 +30,6 @@ app.directive('drawGrid', function () {
                         pixelHeight = (quiltHeight / quiltWidth) * pixelWidth;
                     }
 
-                    //Thickness of the border of each box
-                    var pixelBoxStrokeWidth = 1;
-
                     //Scale the grid boxes proportionally
                     var pixelBoxSize = pixelWidth / quiltWidth;
                     var pixelSnapGridBoxSize = pixelBoxSize * gridSnapGranularity;
@@ -56,16 +53,16 @@ app.directive('drawGrid', function () {
                     var gridSnapPath = snap.path(getGridPathString(pixelSnapGridBoxSize))
                         .attr({
                             fill: 'none',
-                            stroke: '#EE0000',
-                            strokeWidth: 2
+                            stroke: '#555555',
+                            strokeWidth: 1
                         });
                     
                     //Standard inch-per-box pattern
                     var standardPath = snap.path(getGridPathString(pixelBoxSize))
                         .attr({
                             fill: 'none',
-                            stroke: '#00EE00',
-                            strokeWidth: pixelBoxStrokeWidth
+                            stroke: '#CCCCCC',
+                            strokeWidth: 1
                         });
                     
                     rect.attr({
@@ -75,9 +72,17 @@ app.directive('drawGrid', function () {
                     
                     var gridSnapPattern = null;
                     var standardPattern = null;
-                    
-                    if (gridSnapGranularity > 1) {
+                    var makeStandardPattern = function () {
                         standardPattern = standardPath.pattern(0, 0, pixelBoxSize, pixelBoxSize);
+                    };
+                    
+                    var makeSnapPattern = function () {
+                        gridSnapPattern = gridSnapPath.pattern(0, 0, pixelSnapGridBoxSize, pixelSnapGridBoxSize);
+                    };
+                    
+                    //Set pattern fills depending on which pattern is of larger scale
+                    if (gridSnapGranularity > 1) {
+                        makeStandardPattern();
                         
                         //Grid snap is larger than the standard 1-inch grid
                         gridSnapPath.attr({
@@ -85,7 +90,7 @@ app.directive('drawGrid', function () {
                         });
                     }
                     else if (gridSnapGranularity < 1) {
-                        gridSnapPattern = gridSnapPath.pattern(0, 0, pixelSnapGridBoxSize, pixelSnapGridBoxSize);
+                        makeSnapPattern();
                         
                         //Grid snap is smaller than the standard 1-inch grid
                         standardPath.attr({
@@ -94,8 +99,8 @@ app.directive('drawGrid', function () {
                     }
                     
                     //Make patterns from the path definitions if they haven't already been created
-                    gridSnapPattern || (gridSnapPattern = gridSnapPath.pattern(0, 0, pixelSnapGridBoxSize, pixelSnapGridBoxSize));
-                    standardPattern || (standardPattern = standardPath.pattern(0, 0, pixelBoxSize, pixelBoxSize));
+                    gridSnapPattern || makeSnapPattern();
+                    standardPattern || makeStandardPattern();
                     
                     //Finally, fill the grid rectangle with the larger-scale pattern
                     rect.attr({
