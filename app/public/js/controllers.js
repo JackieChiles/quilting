@@ -152,6 +152,8 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     $scope.quilt = null;
     $scope.gridSnapGranularityOptions = [];
     $scope.gridSnapGranularity = null;
+    $scope.blocksAvailable = [];
+    $scope.blockToPlace = null;
     
     //Functions
     $scope.newQuilt = function () {
@@ -187,5 +189,10 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     socket.emit('getGridSnapGranularityOptions', {}, function (message) {
         $scope.gridSnapGranularityOptions = message;
         $scope.gridSnapGranularity = $scope.gridSnapGranularityOptions[0];
+    });
+    
+    socket.emit('getPredefinedBlocks', {}, function (message) {
+        $scope.blocksAvailable = message;
+        $scope.blockToPlace = $scope.blocksAvailable[0];
     });
 });

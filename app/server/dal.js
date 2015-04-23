@@ -73,7 +73,7 @@ function createBlock(name, width, height, svg, systemDefault) {
 
 module.exports.initialize = function () {
     //Add default blocks, removing the old
-    module.exports.getPredefinedBlocks.remove().exec();
+    schema.Block.find({ systemDefault: true }).remove().exec();
     
     //TODO: pick a bettern default size?
     var defaultSize = 4;
