@@ -28,7 +28,7 @@ io.on('connection', function (socket) {
         }
     });
     
-    //message: { quiltId }
+    //message: { id }
     socket.on('getQuilt', function (message, callback) {
         if (message) {
             dal.getQuilt(message.id, function (quilt) {
@@ -41,6 +41,13 @@ io.on('connection', function (socket) {
     socket.on('getGridSnapGranularityOptions', function (message, callback) {       
         dal.getGridSnapGranularityOptions(function (options) {
             callback(options);
+        });
+    });
+    
+    //message: {}
+    socket.on('getPredefinedBlocks', function (message, callback) {       
+        dal.getPredefinedBlocks(function (blocks) {
+            callback(blocks);
         });
     });
 });

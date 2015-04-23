@@ -42,7 +42,16 @@ module.exports.getGridSnapGranularityOptions = function (callback) {
 };
 
 module.exports.getPredefinedBlocks = function (callback) {
-    callback(staticData.preDefinedBlocks);
+    var query = schema.Block.find({ systemDefault: true });
+
+    query.exec(function (err, result) {
+        if (err) {
+            console.log('Error retrieving pre-defined blocks: ' + err);
+            return;
+        }
+        
+        callback(result);
+    });
 };
 
 function createBlock(name, width, height, svg, systemDefault) {
@@ -64,7 +73,7 @@ function createBlock(name, width, height, svg, systemDefault) {
 
 module.exports.initialize = function () {
     //Add default blocks, removing the old
-    schema.Block.find({ systemDefault: true }).remove().exec();
+    module.exports.getPredefinedBlocks.remove().exec();
     
     //TODO: pick a bettern default size?
     var defaultSize = 4;
