@@ -10,7 +10,6 @@ mongoose.connect(dbName, function (err) {
 });
     
 module.exports = {
-    db: mongoose,
     Quilt: mongoose.model('Quilt', new mongoose.Schema({
         name: String,
         creationDate: { type: Date, default: Date.now },
