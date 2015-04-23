@@ -7,6 +7,9 @@ var io = require('socket.io')(server);
 var path = require('path');
 var dal = require('./server/dal');
 
+//Database initialization
+dal.initialize();
+
 //Socket.io setup
 io.on('connection', function (socket) {
     //message: {}
