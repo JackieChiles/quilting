@@ -6,8 +6,8 @@ var app = angular.module('QuiltingApp', []);
 app.directive('drawGrid', function () {
     return {
         link: function (scope, element, attrs) {
-            var drawGrid = function () {
-                if (attrs.drawGrid && scope.quilt) {
+            var drawGrid = function (drawGrid) {
+                if (drawGrid && scope.quilt) {
                     var svg = element[0];
                     var snap = Snap(svg);
                     var quiltWidth = scope.quilt.width;
@@ -115,6 +115,20 @@ app.directive('drawGrid', function () {
     };
 });
 
+//Draws a single svg element
+app.directive('drawSvg', function () {
+    return {
+        link: function (scope, element, attrs) {
+            scope.$watch(attrs.drawSvg, function (elementString) {
+                var svg = element[0];
+                var snap = Snap(svg);
+                
+                snap.add(Snap.parse(elementString));
+            });
+        }
+    };
+});
+
 //If true, sets visibility to hidden; otherwise sets to visible
 app.directive('visibilityHidden', function () {
     return {
@@ -153,7 +167,6 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     $scope.gridSnapGranularityOptions = [];
     $scope.gridSnapGranularity = null;
     $scope.blocksAvailable = [];
-    $scope.blockToPlace = null;
     
     //Functions
     $scope.newQuilt = function () {
@@ -172,6 +185,10 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     
     $scope.isQuiltLoaded = function () {
         return !!$scope.quilt;
+    };
+    
+    $scope.placeBlock = function (block) {
+        //TODO: implement block placement
     };
     
     //Initialization

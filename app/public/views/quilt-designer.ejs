@@ -67,9 +67,11 @@
             </div>
             <div class="col-md-4">
                 <form>
-                    <div>
-                        <label for="blocks-dropdown">Place block: </label>
-                        <select ng-options="block.name for block in blocksAvailable" ng-model="blockToPlace" id="blocks-dropdown" class="form-control"></select>
+                    <h2>Place Blocks</h2>
+                    <div ng-repeat="block in blocksAvailable">
+                        <h3>{{ block.name }}</h3>
+                        <svg draw-svg="block.svg" width="100%" xmlns="http://www.w3.org/2000/svg"></svg>
+                        <button ng-click="placeBlock(block)">Place</button>
                     </div>
                 </form>
             </div>
