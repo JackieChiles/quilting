@@ -78,10 +78,11 @@ module.exports.initialize = function () {
     //TODO: pick a bettern default size?
     var defaultSize = 4;
     
+    //Create default blocks with size of 4 inches and 100 pixels square
     createBlock('Square', defaultSize, defaultSize, '<rect width="100" height="100" />', true);
+    createBlock('Triangle', defaultSize, defaultSize, '<polygon points="0,100 100,100 0,0" />', true);
+    createBlock('Circle', defaultSize, defaultSize, '<circle cx="50" cy="50" r="50"/>', true);
     
-    //TODO: add these too
-    //createBlock('Triangle', defaultSize, defaultSize, '<rect width="100" height="100" />', true);
-    //createBlock('Circle', defaultSize, defaultSize, '<rect width="100" height="100" />', true);
-    //createBlock('Hexagon', defaultSize, defaultSize, '<rect width="100" height="100" />', true);
+    //TODO: pull these numbers from a formula somewhere
+    createBlock('Hexagon', defaultSize, defaultSize, '<polygon points="29.289,0 70.711,0 100,29.289 100,70.711 70.711,100 29.289,100 0,70.711 0,29.289" />', true);
 };
