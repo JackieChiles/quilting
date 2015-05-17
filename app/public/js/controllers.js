@@ -188,7 +188,17 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     };
     
     $scope.placeBlock = function (block) {
-        //TODO: implement block placement
+        var snap = Snap(document.getElementById("grid"));
+        var blockElement = Snap.parse(block.svg).select('*');
+        
+        //TODO don't hardcode 100
+        var scale = (snap.getBBox().width / $scope.quilt.width) / (100 / block.width);
+        
+        //Scale the block to the quilt SVG
+        blockElement.transform('scale(' + scale + ')');
+        
+        //Add the block to the quilt at (0, 0)
+        snap.add(blockElement);
     };
     
     //Initialization
