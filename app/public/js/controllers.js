@@ -189,15 +189,42 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     
     $scope.placeBlock = function (block) {
         var snap = Snap(document.getElementById("grid"));
+        var pixelsPerInch = snap.getBBox().width / $scope.quilt.width;
         var blockElement = Snap.parse(block.svg).select('*');
         
         //TODO don't hardcode 100
-        var scale = (snap.getBBox().width / $scope.quilt.width) / (100 / block.width);
+        var scale = pixelsPerInch / (100 / block.width);
         
         //Scale the block to the quilt SVG
         blockElement.transform('scale(' + scale + ')');
         
         //Add the block to the quilt at (0, 0)
+        blockElement.addClass('quilt-block');
+        
+        //Add block dragging and grid snapping
+        if ($scope.gridSnapGranularity.value) {
+            //This method of grid snapping adapted from the default drag method in the snap.svg source
+            var origTransform = {};
+            var snapTo = pixelsPerInch * $scope.gridSnapGranularity.value;
+
+            blockElement.drag(
+                function(dx, dy) {
+                    var xSnap = Snap.snapTo(snapTo, dx, 999999999);
+                    var ySnap = Snap.snapTo(snapTo, dy, 999999999);
+
+                    this.attr({
+                        transform: origTransform + (origTransform ? "T" : "t") + [xSnap, ySnap]
+                    });
+                }, 
+                function () {
+                    origTransform = this.transform().local;
+                }
+            );
+        }
+        else {
+            blockElement.drag();
+        }
+        
         snap.add(blockElement);
     };
     
