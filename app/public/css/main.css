@@ -1,3 +1,9 @@
 .new-quilt-dimension {
     width: 5em;
 }
+
+.color-preview {
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+}

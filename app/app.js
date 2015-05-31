@@ -74,6 +74,7 @@ app.use('/lib/socket.io.js', express.static(path.join(__dirname, 'node_modules',
 app.use('/lib/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
 app.use('/lib/jquery', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
 app.use('/lib/snap.svg.js', express.static(path.join(__dirname, 'node_modules', 'snapsvg', 'dist', 'snap.svg.js')));
+app.use('/lib/angular-color-picker', express.static(path.join(__dirname, 'node_modules', 'angular-color-picker')));
 
 //Express startup
 server.listen(4000, function () {

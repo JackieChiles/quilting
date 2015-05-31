@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('QuiltingApp', []);
+var app = angular.module('QuiltingApp', ['mp.colorPicker']);
 
 //If true, draws the quilt grid on the SVG element
 app.directive('drawGrid', function () {
@@ -119,12 +119,40 @@ app.directive('drawGrid', function () {
 app.directive('drawSvg', function () {
     return {
         link: function (scope, element, attrs) {
-            scope.$watch(attrs.drawSvg, function (elementString) {
+            var drawSvg = function () {
+                if (!scope.drawSvg) {
+                    return;
+                }
+
+                var elementString = scope.drawSvg;
                 var svg = element[0];
                 var snap = Snap(svg);
+                var fillColor = scope.svgColor;
+                var fragment = Snap.parse(elementString);
                 
-                snap.add(Snap.parse(elementString));
-            });
+                //Remove the old SVG contents
+                snap.clear();
+
+                //Add the fill color to the new elements
+                if (fillColor) {
+                    fragment.select('*').attr({ fill: fillColor });
+                }
+
+                //Add the elements to the SVG
+                snap.add(fragment);
+
+                //Update the drawSvg binding with the added color
+                if (fillColor) {
+                    scope.drawSvg = fragment.paper.select(':not(defs)').toString();
+                }
+            };
+
+            scope.$watch('drawSvg', drawSvg);
+            scope.$watch('svgColor', drawSvg);
+        },
+        scope: {
+            drawSvg: '=',
+            svgColor: '='
         }
     };
 });
@@ -140,6 +168,17 @@ app.directive('visibilityHidden', function () {
                 else {
                     element.css('visibility', 'visible');
                 }
+            });
+        }
+    };
+});
+
+//Prevents a bootstrap dropdown from closing if it clicked
+app.directive('dropdownNoCloseOnClick', function () {
+    return {
+        link: function (scope, element, attrs) {
+            $(element).click(function (e) {
+                e.stopPropagation();
             });
         }
     };
@@ -167,6 +206,8 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     $scope.gridSnapGranularityOptions = [];
     $scope.gridSnapGranularity = null;
     $scope.blocksAvailable = [];
+    $scope.selectedBlock = null;
+    $scope.selectedBlockColor = '#364bdb'; //TODO: don't hardcode
     
     //Functions
     $scope.newQuilt = function () {
@@ -185,6 +226,10 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     
     $scope.isQuiltLoaded = function () {
         return !!$scope.quilt;
+    };
+
+    $scope.selectBlock = function (block) {
+        $scope.selectedBlock = block;
     };
     
     $scope.placeBlock = function (block) {
@@ -247,6 +292,6 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     
     socket.emit('getPredefinedBlocks', {}, function (message) {
         $scope.blocksAvailable = message;
-        $scope.blockToPlace = $scope.blocksAvailable[0];
+        $scope.selectBlock($scope.blocksAvailable[0]);
     });
 });
