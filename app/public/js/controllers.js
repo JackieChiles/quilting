@@ -6,8 +6,8 @@ var app = angular.module('QuiltingApp', ['mp.colorPicker']);
 app.directive('drawGrid', function () {
     return {
         link: function (scope, element, attrs) {
-            var drawGrid = function (drawGrid) {
-                if (drawGrid && scope.quilt) {
+            var drawGrid = function () {
+                if (scope.quilt) {
                     var svg = element[0];
                     var snap = Snap(svg);
                     var quiltWidth = scope.quilt.width;
@@ -108,9 +108,9 @@ app.directive('drawGrid', function () {
                     });
                 }
             };
-                      
-            scope.$watch(attrs.drawGrid, drawGrid);
+
             scope.$watch('gridSnapGranularity', drawGrid);
+            scope.$watch('quilt', drawGrid);
         }
     };
 });
@@ -157,22 +157,6 @@ app.directive('drawSvg', function () {
     };
 });
 
-//If true, sets visibility to hidden; otherwise sets to visible
-app.directive('visibilityHidden', function () {
-    return {
-        link: function (scope, element, attrs) {
-            scope.$watch(attrs.visibilityHidden, function (value) {
-                if (value) {
-                    element.css('visibility', 'hidden');
-                }
-                else {
-                    element.css('visibility', 'visible');
-                }
-            });
-        }
-    };
-});
-
 //Prevents a bootstrap dropdown from closing if it clicked
 app.directive('dropdownNoCloseOnClick', function () {
     return {
@@ -182,6 +166,32 @@ app.directive('dropdownNoCloseOnClick', function () {
             });
         }
     };
+});
+
+app.controller('QuiltNewController', function ($scope, socket) {
+    //Private functions  
+    var loadQuilt = function (quilt) {
+        if (quilt) {
+            window.location.pathname = 'design/' + quilt._id;
+        }
+    };
+
+    //Data
+    $scope.selectedSize = null;
+    $scope.newQuiltName = '';
+
+    //Functions
+    $scope.newQuilt = function () {
+        socket.emit('newQuilt', { size: $scope.selectedSize, name: $scope.newQuiltName }, function (message) {
+            console.log('Created new quilt: ', message);
+            loadQuilt(message);
+        });
+    };
+
+    //Initialization
+    socket.emit('getQuiltSizeOptions', {}, function (message) {
+        $scope.quiltSizeOptions = message;
+    });
 });
 
 app.controller('QuiltDesignerController', function ($scope, socket) {
@@ -198,10 +208,7 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     };
     
     //Data
-    $scope.isQuiltIdParameter = !!getQuiltId();
     $scope.quiltSizeOptions = [];
-    $scope.selectedSize = null;
-    $scope.newQuiltName = '';
     $scope.quilt = null;
     $scope.gridSnapGranularityOptions = [];
     $scope.gridSnapGranularity = null;
@@ -210,22 +217,11 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     $scope.selectedBlockColor = '#364bdb'; //TODO: don't hardcode
     
     //Functions
-    $scope.newQuilt = function () {
-        socket.emit('newQuilt', { size: $scope.selectedSize, name: $scope.newQuiltName }, function (message) {
-            console.log('Created new quilt: ', message);
-            loadQuilt(message);
-        });
-    };
-    
     $scope.getQuilt = function (id) {
         socket.emit('getQuilt', { id: id }, function (message) {
             console.log('Retrieved existing quilt: ', message);
             loadQuilt(message);
         });
-    };
-    
-    $scope.isQuiltLoaded = function () {
-        return !!$scope.quilt;
     };
 
     $scope.selectBlock = function (block) {
@@ -274,16 +270,7 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     };
     
     //Initialization
-    if (!$scope.isQuiltIdParameter) {
-        //Retrieve the list of possible quilt size options if this is a new quilt
-        socket.emit('getQuiltSizeOptions', {}, function (message) {
-            $scope.quiltSizeOptions = message;
-        });
-    }
-    else {
-        //Retrieve the quilt data if this is an existing quilt
-        $scope.getQuilt(getQuiltId());
-    }
+    $scope.getQuilt(getQuiltId());
     
     socket.emit('getGridSnapGranularityOptions', {}, function (message) {
         $scope.gridSnapGranularityOptions = message;

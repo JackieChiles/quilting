@@ -63,8 +63,14 @@ app.get('/', function (req, res) {
 app.get('/home', function (req, res) {
     res.render('home');
 });
-app.get('/design/:id?', function (req, res) {
+app.get('/design/:id', function (req, res) {
     res.render('quilt-designer');
+});
+app.get('/design/', function (req, res) {
+    res.redirect('new');
+});
+app.get('/new', function (req, res) {
+    res.render('quilt-new');
 });
 app.use('/js', express.static(path.join(__dirname, 'public', 'js')));
 app.use('/css', express.static(path.join(__dirname, 'public', 'css')));

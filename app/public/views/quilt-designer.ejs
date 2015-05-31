@@ -7,52 +7,7 @@
     <body ng-controller="QuiltDesignerController">
         <% include nav.ejs %>
         
-        <div ng-show="!isQuiltIdParameter && !isQuiltLoaded()" class="col-sm-offset-5 col-sm-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2 class="panel-title">Create New Quilt</h2>
-                </div>
-                <div class="panel-body">
-                    <form>
-                        <label for="new-quilt-name">
-                            <h4>Name</h4>
-                        </label>
-                        <input ng-model="newQuiltName" type="text" id="new-quilt-name" />
-                        
-                        <hr />
-                        
-                        <h4>Size</h4>
-                        
-                        <div ng-repeat="size in quiltSizeOptions">
-                            <input ng-model="$parent.selectedSize" ng-value="{{ size }}" type="radio" id="quilt-size-radio-{{ size.name }}" />
-                            <label for="quilt-size-radio-{{ size.name }}">
-                                <strong>{{ size.name }}</strong>
-                                <span ng-show="!size.isCustom" class="label label-default">{{ size.width }} {{ size.unit }} &times; {{ size.height }} {{ size.unit }}</span>
-                            </label>
-                        </div>
-                        
-                        <div ng-show="selectedSize">
-                            <div>
-                                <div>
-                                    <label for="new-quilt-width">Width ({{ selectedSize.unit }}): </label>
-                                    <input ng-disabled="!selectedSize.isCustom" ng-model="selectedSize.width" type="number" min="0" step="0.25" id="new-quilt-width" class="new-quilt-dimension" />
-                                </div>
-                                <div>
-                                    <label for="new-quilt-height">Height ({{ selectedSize.unit }}): </label>
-                                    <input ng-disabled="!selectedSize.isCustom" ng-model="selectedSize.height" type="number" min="0" step="0.25" id="new-quilt-height" class="new-quilt-dimension" />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <br />
-
-                        <input ng-disabled="!selectedSize" ng-click="newQuilt()" type="submit" class="btn btn-default btn-lg" value="Create New Quilt" />
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <div visibility-hidden="!isQuiltLoaded()">
+        <div>
             <div class="col-md-8">
                 <form class="form-inline">
                     <div>
@@ -63,7 +18,7 @@
                 
                 <br />
                 
-                <svg draw-grid="isQuiltLoaded()" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="grid"></svg>
+                <svg draw-grid width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="grid"></svg>
             </div>
             <div class="col-md-4">
                 <h2>Place Blocks</h2>
