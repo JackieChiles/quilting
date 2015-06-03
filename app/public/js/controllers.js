@@ -102,10 +102,17 @@ app.directive('drawGrid', function () {
                     gridSnapPattern || makeSnapPattern();
                     standardPattern || makeStandardPattern();
                     
-                    //Finally, fill the grid rectangle with the larger-scale pattern
+                    //Fill the grid rectangle with the larger-scale pattern
                     rect.attr({
                         fill: gridSnapGranularity <= 1 ? standardPattern : gridSnapPattern
                     });
+
+                    //Move the grid to the top of the SVG so that it's underneath all blocks
+                    var firstQuiltBlock = snap.select('.quilt-block')
+
+                    if (firstQuiltBlock) {
+                        rect.insertBefore(firstQuiltBlock);
+                    }
                 }
             };
 
@@ -239,33 +246,64 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
         //Scale the block to the quilt SVG
         blockElement.transform('scale(' + scale + ')');
         
-        //Add the block to the quilt at (0, 0)
+        //Add the quilt-block class
         blockElement.addClass('quilt-block');
         
         //Add block dragging and grid snapping
-        if ($scope.gridSnapGranularity.value) {
-            //This method of grid snapping adapted from the default drag method in the snap.svg source
-            var origTransform = {};
-            var snapTo = pixelsPerInch * $scope.gridSnapGranularity.value;
+        //This method of grid snapping adapted from the default drag method in the snap.svg source
+        var origTransform = {};
 
-            blockElement.drag(
-                function(dx, dy) {
-                    var xSnap = Snap.snapTo(snapTo, dx, 999999999);
-                    var ySnap = Snap.snapTo(snapTo, dy, 999999999);
+        //TODO move to a math service and inject
+        var modWithTolerance = function(left, right, tolerance) {
+            var mod = left % right;
+            var isWithinRange = mod <= tolerance || right - mod <= tolerance;
 
-                    this.attr({
-                        transform: origTransform + (origTransform ? "T" : "t") + [xSnap, ySnap]
-                    });
-                }, 
-                function () {
-                    origTransform = this.transform().local;
+            return isWithinRange ? 0 : mod;
+        }
+
+        blockElement.drag(
+            function(dx, dy) {
+                var xSnap = dx;
+                var ySnap = dy;
+                var granularity = $scope.gridSnapGranularity.value;
+
+                if (granularity) {
+                    var snapTo = pixelsPerInch * granularity;
+                    var xDistanceFromGrid = 0;
+                    var yDistanceFromGrid = 0;
+
+                    //Adjust to ensure that there is no distance between the block and snap grid lines
+                    //Could arise if block was previously moved to a point that is invalid under this snap setting
+                    var origTransformValues = Snap.parseTransformString(origTransform);
+
+                    if (origTransform && origTransformValues) {
+                        //Will be array of form: ['t', xValue, yValue]
+                        var translations = origTransformValues.filter(function (a) {
+                            return a[0] === 't' || a[0] === 'T';
+                        })[0];
+
+                        //TODO move tolerance values to constants
+                        if (translations) {
+                            xDistanceFromGrid = modWithTolerance(translations[1] / pixelsPerInch, granularity, 0.0001) * pixelsPerInch;
+                            yDistanceFromGrid = modWithTolerance(translations[2] / pixelsPerInch, granularity, 0.0001) * pixelsPerInch;
+                        }
+                    }
+
+                    //Get the appropriate distance to move the blocks
+                    xSnap = Snap.snapTo(snapTo, dx, 999999999) - xDistanceFromGrid;
+                    ySnap = Snap.snapTo(snapTo, dy, 999999999) - yDistanceFromGrid;
                 }
-            );
-        }
-        else {
-            blockElement.drag();
-        }
+
+                this.attr({
+                    transform: origTransform + (origTransform ? "T" : "t") + [xSnap, ySnap]
+                });
+            }, 
+            function () {
+                origTransform = this.transform().local;
+            }
+        );
         
+        //Add the block to the quilt at (0, 0)
         snap.add(blockElement);
     };
     
