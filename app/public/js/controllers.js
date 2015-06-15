@@ -302,9 +302,63 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
                 origTransform = this.transform().local;
             }
         );
+
+        //Add click handler for placed shape selection
+        blockElement.mousedown((function (snap) {
+            return function () {
+                $scope.deselectBlock();
+
+                //TODO make stroke operation and move-to-front/back part of SVG service/module
+                this.attr('stroke', 'black');
+                this.attr('stroke-width', '1');
+                this.attr('stroke-dasharray', '3, 3');
+                this.addClass('selected');
+
+                var allQuiltBlocks = snap.selectAll('.quilt-block');
+                var lastQuiltBlock = allQuiltBlocks.length ? allQuiltBlocks[allQuiltBlocks.length - 1] : null;
+
+                if (lastQuiltBlock) {
+                    this.insertAfter(lastQuiltBlock);
+                }
+            };
+        })(snap));
         
         //Add the block to the quilt at (0, 0)
         snap.add(blockElement);
+    };
+
+    $scope.deleteSelectedBlock = function () {
+        //TODO put the call to initialize Snap in utility function or stick it on $scope
+        var snap = Snap(document.getElementById("grid"));
+        var selected = snap.select('.quilt-block.selected');
+
+        if (selected) {
+            selected.remove();
+        }
+    };
+
+    $scope.deselectBlock = function () {
+        var snap = Snap(document.getElementById("grid"));
+        var selected = snap.select('.quilt-block.selected');
+
+        if (selected) {
+            selected.attr('stroke', '');
+            selected.attr('stroke-width', '');
+            selected.attr('stroke-dasharray', '');
+            selected.removeClass('selected');
+        }
+    };
+
+    $scope.handleKeyboardShortcut = function (event) {
+        //TODO don't hardcode key codes
+        if (event.altKey && event.keyCode === 46) {
+            //Alt + Delete: delete selected block
+            $scope.deleteSelectedBlock();
+        }
+        else if (event.keyCode === 27) {
+            //Escape: de-select selected block
+            $scope.deselectBlock();
+        }
     };
     
     //Initialization

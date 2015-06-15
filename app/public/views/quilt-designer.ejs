@@ -4,7 +4,7 @@
         <title>Quilting - Quilt Designer</title>
         <% include header.ejs %>
     </head>
-    <body ng-controller="QuiltDesignerController">
+    <body ng-controller="QuiltDesignerController" ng-keyup="handleKeyboardShortcut($event)">
         <% include nav.ejs %>
         
         <div>
