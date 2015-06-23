@@ -8,21 +8,72 @@ module.exports = {
             width: 98,
             height: 106,
             unit: 'in',
-            isCustom: false
+            isCustom: false,
+            isDefault: false
         },
         {
             name: 'Queen',
             width: 84,
             height: 92,
             unit: 'in',
-            isCustom: false
+            isCustom: false,
+            isDefault: true
+        },
+        {
+            name: 'Full',
+            width: 78,
+            height: 87,
+            unit: 'in',
+            isCustom: false,
+            isDefault: false
+        },
+        {
+            name: 'Twin',
+            width: 63,
+            height: 87,
+            unit: 'in',
+            isCustom: false,
+            isDefault: false
+        },
+        {
+            name: 'Lap',
+            width: 48,
+            height: 68,
+            unit: 'in',
+            isCustom: false,
+            isDefault: false
+        },
+        {
+            name: 'Baby',
+            width: 36,
+            height: 36,
+            unit: 'in',
+            isCustom: false,
+            isDefault: false
+        },
+        {
+            name: 'Pillow',
+            width: 20,
+            height: 20,
+            unit: 'in',
+            isCustom: false,
+            isDefault: false
+        },
+        {
+            name: 'Mini',
+            width: 12,
+            height: 12,
+            unit: 'in',
+            isCustom: false,
+            isDefault: false
         },
         {
             name: 'Custom',
             width: 0,
             height: 0,
             unit: 'in',
-            isCustom: true
+            isCustom: true,
+            isDefault: false
         }
     ],
     gridSnapGranularityOptions: [

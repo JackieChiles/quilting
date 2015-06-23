@@ -184,6 +184,7 @@ app.controller('QuiltNewController', function ($scope, socket) {
     };
 
     //Data
+    $scope.quiltSizeOptions = [];
     $scope.selectedSize = null;
     $scope.newQuiltName = '';
 
@@ -198,6 +199,7 @@ app.controller('QuiltNewController', function ($scope, socket) {
     //Initialization
     socket.emit('getQuiltSizeOptions', {}, function (message) {
         $scope.quiltSizeOptions = message;
+        $scope.selectedSize = $scope.quiltSizeOptions.filter(function(size) { return size.isDefault; })[0];
     });
 });
 
@@ -215,7 +217,6 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     };
     
     //Data
-    $scope.quiltSizeOptions = [];
     $scope.quilt = null;
     $scope.gridSnapGranularityOptions = [];
     $scope.gridSnapGranularity = null;
