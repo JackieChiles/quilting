@@ -37,6 +37,17 @@ module.exports.newQuilt = function (size, name, callback) {
     });
 };
 
+module.exports.updateQuilt = function (quilt, callback) {
+    schema.Quilt.update({ _id: quilt._id }, quilt, {}, function (err, result) {
+        if (err) {
+            console.log('Error updating quilt: ' + err);
+            return;
+        }
+
+        callback(result);
+    });
+};
+
 module.exports.getGridSnapGranularityOptions = function (callback) {
     callback(staticData.gridSnapGranularityOptions);
 };

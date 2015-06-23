@@ -14,7 +14,8 @@ module.exports = {
         name: String,
         creationDate: { type: Date, default: Date.now },
         width: Number,
-        height: Number
+        height: Number,
+        svg: String
     })),
     Block: mongoose.model('Block', new mongoose.Schema({
         name: String,

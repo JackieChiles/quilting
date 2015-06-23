@@ -27,6 +27,15 @@ io.on('connection', function (socket) {
             });
         }
     });
+
+    //message: schema.Quilt
+    socket.on('updateQuilt', function (message, callback) {
+        if (message) {
+            dal.updateQuilt(message, function (quilt) {
+                callback(quilt);
+            });
+        }
+    });
     
     //message: { id }
     socket.on('getQuilt', function (message, callback) {

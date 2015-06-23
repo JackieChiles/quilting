@@ -232,6 +232,16 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
         });
     };
 
+    $scope.updateQuilt = function () {
+        $scope.quilt.svg = Snap(document.getElementById('grid')).toString();
+
+        console.log($scope.quilt.svg);
+
+        socket.emit('updateQuilt', $scope.quilt, function (message) {
+            console.log('Updated quilt: ', message);
+        });
+    };
+
     $scope.selectBlock = function (block) {
         $scope.selectedBlock = block;
     };
