@@ -122,44 +122,46 @@ app.directive('drawGrid', function () {
     };
 });
 
-//Draws a single svg element
-app.directive('drawSvg', function () {
+//Draws a single block
+app.directive('drawBlock', function () {
     return {
         link: function (scope, element, attrs) {
-            var drawSvg = function () {
-                if (!scope.drawSvg) {
+            var drawBlock = function () {
+                if (!scope.drawBlock) {
                     return;
                 }
 
-                var elementString = scope.drawSvg;
+                var block = scope.drawBlock;
                 var svg = element[0];
                 var snap = Snap(svg);
-                var fillColor = scope.svgColor;
-                var fragment = Snap.parse(elementString);
+                var fillColor = scope.blockColor;
+                var blockElement = snap[block.element.name]();
+
+                blockElement.attr(block.element.properties);
                 
                 //Remove the old SVG contents
                 snap.clear();
 
                 //Add the fill color to the new elements
                 if (fillColor) {
-                    fragment.select('*').attr({ fill: fillColor });
+                    blockElement.attr({ fill: fillColor });
                 }
 
                 //Add the elements to the SVG
-                snap.add(fragment);
+                snap.add(blockElement);
 
-                //Update the drawSvg binding with the added color
+                //Update the drawBlock binding with the added color
                 if (fillColor) {
-                    scope.drawSvg = fragment.paper.select(':not(defs)').toString();
+                    scope.drawBlock.element.properties.fill = fillColor;
                 }
             };
 
-            scope.$watch('drawSvg', drawSvg);
-            scope.$watch('svgColor', drawSvg);
+            scope.$watch('drawBlock', drawBlock);
+            scope.$watch('blockColor', drawBlock);
         },
         scope: {
-            drawSvg: '=',
-            svgColor: '='
+            drawBlock: '=',
+            blockColor: '='
         }
     };
 });
@@ -233,13 +235,13 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     };
 
     $scope.updateQuilt = function () {
-        $scope.quilt.svg = Snap(document.getElementById('grid')).toString();
+        // $scope.quilt.svg = Snap(document.getElementById('grid')).toString();
 
-        console.log($scope.quilt.svg);
+        // console.log($scope.quilt.svg);
 
-        socket.emit('updateQuilt', $scope.quilt, function (message) {
-            console.log('Updated quilt: ', message);
-        });
+        // socket.emit('updateQuilt', $scope.quilt, function (message) {
+        //     console.log('Updated quilt: ', message);
+        // });
     };
 
     $scope.selectBlock = function (block) {
@@ -249,7 +251,9 @@ app.controller('QuiltDesignerController', function ($scope, socket) {
     $scope.placeBlock = function (block) {
         var snap = Snap(document.getElementById("grid"));
         var pixelsPerInch = snap.getBBox().width / $scope.quilt.width;
-        var blockElement = Snap.parse(block.svg).select('*');
+        var blockElement = snap[block.element.name]();
+
+        blockElement.attr(block.element.properties);
         
         //TODO don't hardcode 100
         var scale = pixelsPerInch / (100 / block.width);

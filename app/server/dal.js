@@ -65,13 +65,13 @@ module.exports.getPredefinedBlocks = function (callback) {
     });
 };
 
-function createBlock(name, width, height, svg, systemDefault) {
+function createBlock(name, width, height, element, systemDefault) {
     var m = new schema.Block();
 
     m.name = name;
     m.width = width;
     m.height = height;
-    m.svg = svg;
+    m.element = element;
     m.systemDefault = systemDefault;
 
     m.save(function (err, result) {
@@ -90,10 +90,10 @@ module.exports.initialize = function () {
     var defaultSize = 4;
     
     //Create default blocks with size of 4 inches and 100 pixels square
-    createBlock('Square', defaultSize, defaultSize, '<rect width="100" height="100" />', true);
-    createBlock('Triangle', defaultSize, defaultSize, '<polygon points="0,100 100,100 0,0" />', true);
-    createBlock('Circle', defaultSize, defaultSize, '<circle cx="50" cy="50" r="50"/>', true);
+    createBlock('Square', defaultSize, defaultSize, { name: 'rect', properties: { width: '100', height: '100' }}, true);
+    createBlock('Triangle', defaultSize, defaultSize, { name: 'polygon', properties: { points: '0,100 100,100 0,0' }}, true);
+    createBlock('Circle', defaultSize, defaultSize, { name: 'circle', properties: { cx: '50', cy: '50', r: '50' }}, true);
     
     //TODO: pull these numbers from a formula somewhere
-    createBlock('Hexagon', defaultSize, defaultSize, '<polygon points="29.289,0 70.711,0 100,29.289 100,70.711 70.711,100 29.289,100 0,70.711 0,29.289" />', true);
+    createBlock('Hexagon', defaultSize, defaultSize, { name: 'polygon', properties: { points: '29.289,0 70.711,0 100,29.289 100,70.711 70.711,100 29.289,100 0,70.711 0,29.289' }}, true);
 };

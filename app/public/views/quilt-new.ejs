@@ -24,7 +24,7 @@
                         <h4>Size</h4>
                         
                         <div ng-repeat="size in quiltSizeOptions">
-                            <input ng-model="$parent.selectedSize" ng-value="size" ng-checked="{{ size.isDefault }}" type="radio" id="quilt-size-radio-{{ size.name }}" />
+                            <input ng-model="$parent.selectedSize" ng-value="size" type="radio" id="quilt-size-radio-{{ size.name }}" />
                             <label for="quilt-size-radio-{{ size.name }}">
                                 <strong>{{ size.name }}</strong>
                                 <span ng-show="!size.isCustom" class="label label-default">{{ size.width }} {{ size.unit }} &times; {{ size.height }} {{ size.unit }}</span>
