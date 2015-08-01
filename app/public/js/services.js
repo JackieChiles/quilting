@@ -27,10 +27,35 @@ app.factory('socket', function ($rootScope) {
     };
 });
 
-//Depends Snap.svg
+//The quiltSvg service provides functions that manipulate an SVG object ('snap' parameter or 'element' from angular
+//binding) using quilt data ('quilt' parameter) and other information. It is the bridge between the quilt/block models and
+//the SVG elements in the UI.
+
+//Depends on Snap.svg
 //Also depends on jQuery, but TODO: use a controller instead of a link function to get access to $element
 //http://jasonmore.net/angular-js-directives-difference-controller-link/
 app.factory('quiltSvg', function () {
+    //Private functions
+    var deleteSelectedBlock = function (snap) {
+        //TODO: must remove from quilt's block collection
+        var selected = snap.select('.quilt-block.selected');
+
+        if (selected) {
+            selected.remove();
+        }
+    };
+
+    var deselectBlock = function (snap) {
+        var selected = snap.select('.quilt-block.selected');
+
+        if (selected) {
+            selected.attr('stroke', '');
+            selected.attr('stroke-width', '');
+            selected.attr('stroke-dasharray', '');
+            selected.removeClass('selected');
+        }
+    };
+
     return {
         drawGrid: function (element, quilt, gridSnapGranularity) {
             var svg = element[0];
@@ -156,7 +181,111 @@ app.factory('quiltSvg', function () {
 
             //Update the drawBlock binding with the added color
             if (fillColor) {
-                scope.drawBlock.element.properties.fill = fillColor;
+                block.element.properties.fill = fillColor;
+            }
+        },
+        placeBlock: function (snap, placedBlock, quilt, gridSnapGranularity) {
+            var block = placedBlock.block;
+            var pixelsPerInch = snap.getBBox().width / quilt.width;
+            var blockElement = snap[block.element.name]();
+
+            blockElement.attr(block.element.properties);
+            
+            //TODO don't hardcode 100
+            var scale = pixelsPerInch / (100 / block.width);
+            
+            //Scale the block to the quilt SVG
+            blockElement.transform('scale(' + scale + ')');
+            
+            //Add the quilt-block class
+            blockElement.addClass('quilt-block');
+            
+            //Add block dragging and grid snapping
+            //This method of grid snapping adapted from the default drag method in the snap.svg source
+            var origTransform = {};
+
+            //TODO move to a math service and inject
+            var modWithTolerance = function(left, right, tolerance) {
+                var mod = left % right;
+                var isWithinRange = mod <= tolerance || right - mod <= tolerance;
+
+                return isWithinRange ? 0 : mod;
+            }
+
+            blockElement.drag(
+                function(dx, dy) {
+                    var xSnap = dx;
+                    var ySnap = dy;
+                    var granularity = gridSnapGranularity;
+
+                    if (granularity) {
+                        var snapTo = pixelsPerInch * granularity;
+                        var xDistanceFromGrid = 0;
+                        var yDistanceFromGrid = 0;
+
+                        //Adjust to ensure that there is no distance between the block and snap grid lines
+                        //Could arise if block was previously moved to a point that is invalid under this snap setting
+                        var origTransformValues = Snap.parseTransformString(origTransform);
+
+                        if (origTransform && origTransformValues) {
+                            //Will be array of form: ['t', xValue, yValue]
+                            var translations = origTransformValues.filter(function (a) {
+                                return a[0] === 't' || a[0] === 'T';
+                            })[0];
+
+                            //TODO move tolerance values to constants
+                            if (translations) {
+                                xDistanceFromGrid = modWithTolerance(translations[1] / pixelsPerInch, granularity, 0.0001) * pixelsPerInch;
+                                yDistanceFromGrid = modWithTolerance(translations[2] / pixelsPerInch, granularity, 0.0001) * pixelsPerInch;
+                            }
+                        }
+
+                        //Get the appropriate distance to move the blocks
+                        xSnap = Snap.snapTo(snapTo, dx, 999999999) - xDistanceFromGrid;
+                        ySnap = Snap.snapTo(snapTo, dy, 999999999) - yDistanceFromGrid;
+                    }
+
+                    this.attr({
+                        transform: origTransform + (origTransform ? "T" : "t") + [xSnap, ySnap]
+                    });
+                }, 
+                function () {
+                    origTransform = this.transform().local;
+                }
+            );
+
+            //Add click handler for placed shape selection
+            blockElement.mousedown((function (snap) {
+                return function () {
+                    deselectBlock(snap);
+
+                    //TODO make stroke operation and move-to-front/back part of SVG service/module
+                    this.attr('stroke', 'black');
+                    this.attr('stroke-width', '1');
+                    this.attr('stroke-dasharray', '3, 3');
+                    this.addClass('selected');
+
+                    var allQuiltBlocks = snap.selectAll('.quilt-block');
+                    var lastQuiltBlock = allQuiltBlocks.length ? allQuiltBlocks[allQuiltBlocks.length - 1] : null;
+
+                    if (lastQuiltBlock) {
+                        this.insertAfter(lastQuiltBlock);
+                    }
+                };
+            })(snap));
+            
+            //Add the block to the quilt at (0, 0)
+            snap.add(blockElement);
+        },
+        handleKeyboardShortcut: function (snap, event) {
+            //TODO don't hardcode key codes
+            if (event.altKey && event.keyCode === 46) {
+                //Alt + Delete: delete selected block
+                deleteSelectedBlock(snap);
+            }
+            else if (event.keyCode === 27) {
+                //Escape: de-select selected block
+                deselectBlock(snap);
             }
         }
     };
